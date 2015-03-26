@@ -455,6 +455,15 @@ class Client
         if (!empty($this->curl_options)) {
             curl_setopt_array($ch, $this->curl_options);
         }
+        
+        //handle any files that have been uploaded
+        if(\Input::hasFile('file')) {
+            curl_setopt($ch, CURLOPT_POST, 1);
+            $file = array();
+            $file['file'] = new \CurlFile(\Input::file('file')->getRealPath(), \Input::file('file')->getMimeType(), \Input::file('file')->getClientOriginalName());
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $file);
+        }
+        
         $result = curl_exec($ch);
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $content_type = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
